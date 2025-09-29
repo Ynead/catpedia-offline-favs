@@ -9,9 +9,7 @@ interface CatBreed {
   name: string;
   description: string;
   temperament?: string;
-  image?: {
-    url: string;
-  };
+  reference_image_id?: string;
 }
 
 const fetchBreeds = async (): Promise<CatBreed[]> => {
@@ -78,7 +76,7 @@ const Favorites = () => {
                 key={breed.id}
                 id={breed.id}
                 name={breed.name}
-                image={breed.image?.url}
+                image={breed.reference_image_id ? `https://cdn2.thecatapi.com/images/${breed.reference_image_id}.jpg` : undefined}
                 description={breed.description}
                 temperament={breed.temperament}
               />
