@@ -35,15 +35,18 @@ const BreedCard = ({ id, name, image, description, temperament }: BreedCardProps
     window.dispatchEvent(new CustomEvent("favorites-updated"));
   };
 
+  const [imageError, setImageError] = useState(false);
+
   return (
     <Link to={`/breed/${id}`}>
       <Card className="group overflow-hidden transition-all hover:shadow-lg hover:scale-[1.02] cursor-pointer">
         <div className="relative aspect-square overflow-hidden bg-secondary">
-          {image ? (
+          {image && !imageError ? (
             <img
               src={image}
               alt={name}
               className="w-full h-full object-cover transition-transform group-hover:scale-110"
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">
