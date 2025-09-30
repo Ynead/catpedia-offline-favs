@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import BreedCard from "@/components/BreedCard";
 import { Heart, Loader2 } from "lucide-react";
+import { offlineStorage } from "@/lib/offlineStorage";
 
 interface CatBreed {
   id: string;
@@ -12,10 +13,24 @@ interface CatBreed {
   reference_image_id?: string;
 }
 
+const BREEDS_CACHE_KEY = "catpedia-breeds-cache";
+
 const fetchBreeds = async (): Promise<CatBreed[]> => {
-  const response = await fetch("https://api.thecatapi.com/v1/breeds");
-  if (!response.ok) throw new Error("Failed to fetch breeds");
-  return response.json();
+  const cached = offlineStorage.get<CatBreed[]>(BREEDS_CACHE_KEY);
+  
+  try {
+    const response = await fetch("https://api.thecatapi.com/v1/breeds");
+    if (!response.ok) throw new Error("Failed to fetch breeds");
+    const data = await response.json();
+    offlineStorage.set(BREEDS_CACHE_KEY, data);
+    return data;
+  } catch (error) {
+    if (cached) {
+      console.log("Using cached data (offline mode)");
+      return cached;
+    }
+    throw error;
+  }
 };
 
 const Favorites = () => {
